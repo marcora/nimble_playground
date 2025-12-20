@@ -83,7 +83,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#setup-environment" id="toc-setup-environment" class="nav-link active" data-scroll-target="#setup-environment">Setup environment</a></li>
-  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#read-data" id="toc-read-data" class="nav-link" data-scroll-target="#read-data">Read data</a></li>
+  <li><a href="#specify-joint-model-likelihood-priors" id="toc-specify-joint-model-likelihood-priors" class="nav-link" data-scroll-target="#specify-joint-model-likelihood-priors">Specify joint model (likelihood + priors)</a></li>
+  <li><a href="#condition-on-data-and-sample-from-posterior" id="toc-condition-on-data-and-sample-from-posterior" class="nav-link" data-scroll-target="#condition-on-data-and-sample-from-posterior">Condition on data and sample from posterior</a></li>
   </ul>
 </nav>
 </div>
@@ -114,11 +116,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(posterior)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
+<section id="read-data" class="level2">
+<h2 class="anchored" data-anchor-id="read-data">Read data</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sleepstudy, <span class="at">package =</span> <span class="st">'lme4'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -169,6 +175,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="specify-joint-model-likelihood-priors" class="level2">
+<h2 class="anchored" data-anchor-id="specify-joint-model-likelihood-priors">Specify joint model (likelihood + priors)</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sleepCode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
@@ -190,52 +199,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  sigma_b0 <span class="sc">~</span> <span class="fu">T</span>(<span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">100</span>), <span class="dv">0</span>, ) <span class="co"># Half-normal</span></span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  sigma_b1 <span class="sc">~</span> <span class="fu">T</span>(<span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">100</span>), <span class="dv">0</span>, )</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  sigma_y <span class="sc">~</span> <span class="fu">T</span>(<span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">100</span>), <span class="dv">0</span>, )</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>sleepData <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">Reaction =</span> sleepstudy<span class="sc">$</span>Reaction)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>sleepConstants <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">length</span>(sleepstudy<span class="sc">$</span>Subject),</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">J =</span> <span class="fu">length</span>(<span class="fu">unique</span>(sleepstudy<span class="sc">$</span>Subject)),</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">Days =</span> sleepstudy<span class="sc">$</span>Days,</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">Subject =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(sleepstudy<span class="sc">$</span>Subject))</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>sleepModel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(sleepCode, <span class="at">constants =</span> sleepConstants, <span class="at">data =</span> sleepData)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Defining model</code></pre>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Building model</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Setting data and initial values</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Running calculate on model
-  [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Checking model sizes and dimensions</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>  [Note] This model is not fully initialized. This is not an error.
-         To see which variables are not initialized, use model$initializeInfo().
-         For more information on model initialization, see help(modelInitialization).</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sleepModel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(sleepModel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Compiling
-  [Note] This may take a minute.
-  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code =</span> sleepCode, </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">constants =</span> sleepConstants, </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> sleepData,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">monitors =</span> <span class="fu">c</span>(<span class="st">"b0.f"</span>, <span class="st">"b1.f"</span>, <span class="st">"b0.r"</span>, <span class="st">"b1.r"</span>, <span class="st">"sigma_y"</span>, <span class="st">"sigma_b0"</span>, <span class="st">"sigma_b1"</span>),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">niter =</span> <span class="dv">4000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>, <span class="at">nchains =</span> <span class="dv">4</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="condition-on-data-and-sample-from-posterior" class="level2">
+<h2 class="anchored" data-anchor-id="condition-on-data-and-sample-from-posterior">Condition on data and sample from posterior</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sleepData <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">Reaction =</span> sleepstudy<span class="sc">$</span>Reaction)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sleepConstants <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">length</span>(sleepstudy<span class="sc">$</span>Subject),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">J =</span> <span class="fu">length</span>(<span class="fu">unique</span>(sleepstudy<span class="sc">$</span>Subject)),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Days =</span> sleepstudy<span class="sc">$</span>Days,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Subject =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(sleepstudy<span class="sc">$</span>Subject))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">code =</span> sleepCode, </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">constants =</span> sleepConstants, </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> sleepData,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">monitors =</span> <span class="fu">c</span>(<span class="st">"b0.f"</span>, <span class="st">"b1.f"</span>, <span class="st">"b0.r"</span>, <span class="st">"b1.r"</span>, <span class="st">"sigma_y"</span>, <span class="st">"sigma_b0"</span>, <span class="st">"sigma_b1"</span>),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">niter =</span> <span class="dv">4000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>, <span class="at">nchains =</span> <span class="dv">4</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">progressBar =</span> <span class="cn">FALSE</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Defining model</code></pre>
 </div>
@@ -274,38 +260,553 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stderr">
 <pre><code>running chain 1...</code></pre>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>|-------------|-------------|-------------|-------------|
-|-------------------------------------------------------|</code></pre>
-</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>running chain 2...</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>|-------------|-------------|-------------|-------------|
-|-------------------------------------------------------|</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>running chain 3...</code></pre>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>|-------------|-------------|-------------|-------------|
-|-------------------------------------------------------|</code></pre>
-</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>running chain 4...</code></pre>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>|-------------|-------------|-------------|-------------|
-|-------------------------------------------------------|</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">as_draws</span>(samples)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b0.f</td>
+<td style="text-align: right;">249.9937</td>
+<td style="text-align: right;">249.9760</td>
+<td style="text-align: right;">7.089</td>
+<td style="text-align: right;">7.233</td>
+<td style="text-align: right;">238.2117</td>
+<td style="text-align: right;">261.5220</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">432.6</td>
+<td style="text-align: right;">822.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[1]</td>
+<td style="text-align: right;">2.0854</td>
+<td style="text-align: right;">1.9901</td>
+<td style="text-align: right;">13.839</td>
+<td style="text-align: right;">13.711</td>
+<td style="text-align: right;">-20.5120</td>
+<td style="text-align: right;">24.7701</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1440.2</td>
+<td style="text-align: right;">2834.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[2]</td>
+<td style="text-align: right;">-39.5105</td>
+<td style="text-align: right;">-39.3044</td>
+<td style="text-align: right;">14.255</td>
+<td style="text-align: right;">13.979</td>
+<td style="text-align: right;">-63.3356</td>
+<td style="text-align: right;">-16.1478</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1387.8</td>
+<td style="text-align: right;">2560.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[3]</td>
+<td style="text-align: right;">-37.9154</td>
+<td style="text-align: right;">-37.7874</td>
+<td style="text-align: right;">14.100</td>
+<td style="text-align: right;">13.929</td>
+<td style="text-align: right;">-61.7131</td>
+<td style="text-align: right;">-14.9626</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1413.9</td>
+<td style="text-align: right;">3184.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[4]</td>
+<td style="text-align: right;">25.6699</td>
+<td style="text-align: right;">25.3717</td>
+<td style="text-align: right;">13.941</td>
+<td style="text-align: right;">13.851</td>
+<td style="text-align: right;">3.1182</td>
+<td style="text-align: right;">48.8349</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1274.6</td>
+<td style="text-align: right;">2743.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[5]</td>
+<td style="text-align: right;">24.0653</td>
+<td style="text-align: right;">23.7370</td>
+<td style="text-align: right;">13.934</td>
+<td style="text-align: right;">13.537</td>
+<td style="text-align: right;">1.6497</td>
+<td style="text-align: right;">47.3341</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1225.1</td>
+<td style="text-align: right;">2412.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[6]</td>
+<td style="text-align: right;">10.4202</td>
+<td style="text-align: right;">10.1377</td>
+<td style="text-align: right;">13.497</td>
+<td style="text-align: right;">13.426</td>
+<td style="text-align: right;">-11.5446</td>
+<td style="text-align: right;">32.9917</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1286.4</td>
+<td style="text-align: right;">2924.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[7]</td>
+<td style="text-align: right;">18.1181</td>
+<td style="text-align: right;">17.9357</td>
+<td style="text-align: right;">13.757</td>
+<td style="text-align: right;">13.792</td>
+<td style="text-align: right;">-3.8423</td>
+<td style="text-align: right;">41.1042</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1219.7</td>
+<td style="text-align: right;">2630.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[8]</td>
+<td style="text-align: right;">-6.4624</td>
+<td style="text-align: right;">-6.3304</td>
+<td style="text-align: right;">13.595</td>
+<td style="text-align: right;">13.502</td>
+<td style="text-align: right;">-28.9249</td>
+<td style="text-align: right;">15.5088</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1428.0</td>
+<td style="text-align: right;">3146.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[9]</td>
+<td style="text-align: right;">1.7911</td>
+<td style="text-align: right;">1.7257</td>
+<td style="text-align: right;">13.641</td>
+<td style="text-align: right;">13.437</td>
+<td style="text-align: right;">-20.3738</td>
+<td style="text-align: right;">24.1250</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1462.7</td>
+<td style="text-align: right;">3295.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[10]</td>
+<td style="text-align: right;">36.0952</td>
+<td style="text-align: right;">35.7879</td>
+<td style="text-align: right;">14.193</td>
+<td style="text-align: right;">14.225</td>
+<td style="text-align: right;">13.3816</td>
+<td style="text-align: right;">60.0120</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1077.3</td>
+<td style="text-align: right;">2748.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[11]</td>
+<td style="text-align: right;">-25.1405</td>
+<td style="text-align: right;">-25.0273</td>
+<td style="text-align: right;">13.700</td>
+<td style="text-align: right;">13.734</td>
+<td style="text-align: right;">-47.6967</td>
+<td style="text-align: right;">-3.1081</td>
+<td style="text-align: right;">1.004</td>
+<td style="text-align: right;">1428.9</td>
+<td style="text-align: right;">3586.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[12]</td>
+<td style="text-align: right;">-12.8616</td>
+<td style="text-align: right;">-12.7845</td>
+<td style="text-align: right;">13.594</td>
+<td style="text-align: right;">13.536</td>
+<td style="text-align: right;">-35.4374</td>
+<td style="text-align: right;">9.1399</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1354.8</td>
+<td style="text-align: right;">3015.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[13]</td>
+<td style="text-align: right;">5.9719</td>
+<td style="text-align: right;">5.8203</td>
+<td style="text-align: right;">13.468</td>
+<td style="text-align: right;">13.560</td>
+<td style="text-align: right;">-15.9570</td>
+<td style="text-align: right;">28.0199</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1281.0</td>
+<td style="text-align: right;">3390.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[14]</td>
+<td style="text-align: right;">21.5396</td>
+<td style="text-align: right;">21.3250</td>
+<td style="text-align: right;">14.291</td>
+<td style="text-align: right;">14.068</td>
+<td style="text-align: right;">-1.7774</td>
+<td style="text-align: right;">45.3256</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">1161.2</td>
+<td style="text-align: right;">3072.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[15]</td>
+<td style="text-align: right;">4.0686</td>
+<td style="text-align: right;">4.0114</td>
+<td style="text-align: right;">13.363</td>
+<td style="text-align: right;">13.217</td>
+<td style="text-align: right;">-17.8824</td>
+<td style="text-align: right;">26.2590</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1363.3</td>
+<td style="text-align: right;">3529.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[16]</td>
+<td style="text-align: right;">-25.5523</td>
+<td style="text-align: right;">-25.4227</td>
+<td style="text-align: right;">13.860</td>
+<td style="text-align: right;">13.667</td>
+<td style="text-align: right;">-48.6466</td>
+<td style="text-align: right;">-2.6182</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1167.1</td>
+<td style="text-align: right;">3044.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b0.r[17]</td>
+<td style="text-align: right;">1.9530</td>
+<td style="text-align: right;">1.8840</td>
+<td style="text-align: right;">13.510</td>
+<td style="text-align: right;">13.341</td>
+<td style="text-align: right;">-19.8357</td>
+<td style="text-align: right;">24.3418</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1401.8</td>
+<td style="text-align: right;">3557.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b0.r[18]</td>
+<td style="text-align: right;">13.5945</td>
+<td style="text-align: right;">13.3447</td>
+<td style="text-align: right;">13.664</td>
+<td style="text-align: right;">13.518</td>
+<td style="text-align: right;">-8.4871</td>
+<td style="text-align: right;">36.3117</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1345.4</td>
+<td style="text-align: right;">2967.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.f</td>
+<td style="text-align: right;">10.6016</td>
+<td style="text-align: right;">10.6213</td>
+<td style="text-align: right;">1.591</td>
+<td style="text-align: right;">1.559</td>
+<td style="text-align: right;">7.9662</td>
+<td style="text-align: right;">13.2088</td>
+<td style="text-align: right;">1.007</td>
+<td style="text-align: right;">326.3</td>
+<td style="text-align: right;">615.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[1]</td>
+<td style="text-align: right;">9.3490</td>
+<td style="text-align: right;">9.3154</td>
+<td style="text-align: right;">2.781</td>
+<td style="text-align: right;">2.715</td>
+<td style="text-align: right;">4.8150</td>
+<td style="text-align: right;">13.9885</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">937.0</td>
+<td style="text-align: right;">2122.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[2]</td>
+<td style="text-align: right;">-8.6547</td>
+<td style="text-align: right;">-8.6583</td>
+<td style="text-align: right;">2.877</td>
+<td style="text-align: right;">2.898</td>
+<td style="text-align: right;">-13.3489</td>
+<td style="text-align: right;">-3.9522</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">784.3</td>
+<td style="text-align: right;">1921.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[3]</td>
+<td style="text-align: right;">-5.5358</td>
+<td style="text-align: right;">-5.4979</td>
+<td style="text-align: right;">2.843</td>
+<td style="text-align: right;">2.835</td>
+<td style="text-align: right;">-10.2274</td>
+<td style="text-align: right;">-0.8488</td>
+<td style="text-align: right;">1.004</td>
+<td style="text-align: right;">793.0</td>
+<td style="text-align: right;">1943.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[4]</td>
+<td style="text-align: right;">-5.0677</td>
+<td style="text-align: right;">-5.0488</td>
+<td style="text-align: right;">2.765</td>
+<td style="text-align: right;">2.779</td>
+<td style="text-align: right;">-9.5776</td>
+<td style="text-align: right;">-0.5328</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">872.3</td>
+<td style="text-align: right;">2193.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[5]</td>
+<td style="text-align: right;">-3.2929</td>
+<td style="text-align: right;">-3.2995</td>
+<td style="text-align: right;">2.701</td>
+<td style="text-align: right;">2.696</td>
+<td style="text-align: right;">-7.7979</td>
+<td style="text-align: right;">1.1202</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">1008.5</td>
+<td style="text-align: right;">2164.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[6]</td>
+<td style="text-align: right;">-0.4050</td>
+<td style="text-align: right;">-0.3954</td>
+<td style="text-align: right;">2.717</td>
+<td style="text-align: right;">2.698</td>
+<td style="text-align: right;">-4.9035</td>
+<td style="text-align: right;">4.0258</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">980.2</td>
+<td style="text-align: right;">2843.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[7]</td>
+<td style="text-align: right;">-0.3382</td>
+<td style="text-align: right;">-0.3461</td>
+<td style="text-align: right;">2.753</td>
+<td style="text-align: right;">2.764</td>
+<td style="text-align: right;">-4.8336</td>
+<td style="text-align: right;">4.2063</td>
+<td style="text-align: right;">1.004</td>
+<td style="text-align: right;">842.0</td>
+<td style="text-align: right;">2395.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[8]</td>
+<td style="text-align: right;">1.0353</td>
+<td style="text-align: right;">1.0329</td>
+<td style="text-align: right;">2.713</td>
+<td style="text-align: right;">2.678</td>
+<td style="text-align: right;">-3.4570</td>
+<td style="text-align: right;">5.4855</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">819.0</td>
+<td style="text-align: right;">2291.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[9]</td>
+<td style="text-align: right;">-11.0199</td>
+<td style="text-align: right;">-11.0033</td>
+<td style="text-align: right;">2.779</td>
+<td style="text-align: right;">2.752</td>
+<td style="text-align: right;">-15.5909</td>
+<td style="text-align: right;">-6.5477</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">939.5</td>
+<td style="text-align: right;">2189.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[10]</td>
+<td style="text-align: right;">8.5244</td>
+<td style="text-align: right;">8.4639</td>
+<td style="text-align: right;">2.797</td>
+<td style="text-align: right;">2.810</td>
+<td style="text-align: right;">3.9859</td>
+<td style="text-align: right;">13.1796</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">993.3</td>
+<td style="text-align: right;">2038.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[11]</td>
+<td style="text-align: right;">1.2937</td>
+<td style="text-align: right;">1.2744</td>
+<td style="text-align: right;">2.753</td>
+<td style="text-align: right;">2.759</td>
+<td style="text-align: right;">-3.2319</td>
+<td style="text-align: right;">5.8573</td>
+<td style="text-align: right;">1.005</td>
+<td style="text-align: right;">806.6</td>
+<td style="text-align: right;">2579.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[12]</td>
+<td style="text-align: right;">6.7104</td>
+<td style="text-align: right;">6.6711</td>
+<td style="text-align: right;">2.754</td>
+<td style="text-align: right;">2.767</td>
+<td style="text-align: right;">2.2293</td>
+<td style="text-align: right;">11.2688</td>
+<td style="text-align: right;">1.005</td>
+<td style="text-align: right;">820.2</td>
+<td style="text-align: right;">1794.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[13]</td>
+<td style="text-align: right;">-3.1690</td>
+<td style="text-align: right;">-3.1689</td>
+<td style="text-align: right;">2.671</td>
+<td style="text-align: right;">2.599</td>
+<td style="text-align: right;">-7.5756</td>
+<td style="text-align: right;">1.2612</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">960.9</td>
+<td style="text-align: right;">2194.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[14]</td>
+<td style="text-align: right;">3.5351</td>
+<td style="text-align: right;">3.5265</td>
+<td style="text-align: right;">2.756</td>
+<td style="text-align: right;">2.771</td>
+<td style="text-align: right;">-0.8888</td>
+<td style="text-align: right;">8.0399</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">1043.7</td>
+<td style="text-align: right;">2846.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[15]</td>
+<td style="text-align: right;">0.8491</td>
+<td style="text-align: right;">0.8180</td>
+<td style="text-align: right;">2.714</td>
+<td style="text-align: right;">2.721</td>
+<td style="text-align: right;">-3.5343</td>
+<td style="text-align: right;">5.2878</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">826.3</td>
+<td style="text-align: right;">2515.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[16]</td>
+<td style="text-align: right;">4.9374</td>
+<td style="text-align: right;">4.9132</td>
+<td style="text-align: right;">2.792</td>
+<td style="text-align: right;">2.769</td>
+<td style="text-align: right;">0.3238</td>
+<td style="text-align: right;">9.6035</td>
+<td style="text-align: right;">1.005</td>
+<td style="text-align: right;">759.6</td>
+<td style="text-align: right;">2001.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b1.r[17]</td>
+<td style="text-align: right;">-1.0697</td>
+<td style="text-align: right;">-1.0885</td>
+<td style="text-align: right;">2.712</td>
+<td style="text-align: right;">2.679</td>
+<td style="text-align: right;">-5.5209</td>
+<td style="text-align: right;">3.3640</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">840.9</td>
+<td style="text-align: right;">2087.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b1.r[18]</td>
+<td style="text-align: right;">1.1593</td>
+<td style="text-align: right;">1.1326</td>
+<td style="text-align: right;">2.735</td>
+<td style="text-align: right;">2.746</td>
+<td style="text-align: right;">-3.2940</td>
+<td style="text-align: right;">5.6704</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">973.1</td>
+<td style="text-align: right;">2478.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma_b0</td>
+<td style="text-align: right;">27.0109</td>
+<td style="text-align: right;">26.1909</td>
+<td style="text-align: right;">6.551</td>
+<td style="text-align: right;">6.075</td>
+<td style="text-align: right;">17.7009</td>
+<td style="text-align: right;">38.6698</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1024.3</td>
+<td style="text-align: right;">1403.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sigma_b1</td>
+<td style="text-align: right;">6.4435</td>
+<td style="text-align: right;">6.3093</td>
+<td style="text-align: right;">1.337</td>
+<td style="text-align: right;">1.267</td>
+<td style="text-align: right;">4.5499</td>
+<td style="text-align: right;">8.8844</td>
+<td style="text-align: right;">1.002</td>
+<td style="text-align: right;">1334.4</td>
+<td style="text-align: right;">2046.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma_y</td>
+<td style="text-align: right;">25.7630</td>
+<td style="text-align: right;">25.6813</td>
+<td style="text-align: right;">1.541</td>
+<td style="text-align: right;">1.549</td>
+<td style="text-align: right;">23.3739</td>
+<td style="text-align: right;">28.4004</td>
+<td style="text-align: right;">1.001</td>
+<td style="text-align: right;">2088.7</td>
+<td style="text-align: right;">2383.6</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">as_draws</span>(samples)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_combo</span>(samples, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b0.f"</span>, <span class="st">"b1.f"</span>, <span class="st">"sigma_y"</span>, <span class="st">"sigma_b0"</span>, <span class="st">"sigma_b1"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b0.f"</span>, <span class="st">"b1.f"</span>, <span class="st">"sigma_b0"</span>, <span class="st">"sigma_b1"</span>, <span class="st">"sigma_y"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_combo</span>(samples, <span class="at">pars =</span> pars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

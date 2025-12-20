@@ -4,6 +4,9 @@ format:
   html:
     toc: true
     df-print: kable
+execute:
+  messages: false
+  warnings: false
 ---
 
 ## Setup environment
@@ -14,15 +17,21 @@ library(tidyverse)
 library(nimble)
 library(posterior)
 library(bayesplot)
+
+set.seed(123)
+
+theme_set(theme_minimal())
 ```
 
-## Data
+## Read data
 
 ```{r}
 data(sleepstudy, package = 'lme4')
 
 head(sleepstudy)
 ```
+
+## Specify joint model (likelihood + priors)
 
 ```{r}
 sleepCode <- nimbleCode({
@@ -46,7 +55,11 @@ sleepCode <- nimbleCode({
   sigma_b1 ~ T(dnorm(0, sd = 100), 0, )
   sigma_y ~ T(dnorm(0, sd = 100), 0, )
 })
+```
 
+## Condition on data and sample from posterior
+
+```{r}
 sleepData <- list(Reaction = sleepstudy$Reaction)
 
 sleepConstants <- list(
@@ -56,19 +69,22 @@ sleepConstants <- list(
   Subject = as.numeric(factor(sleepstudy$Subject))
 )
 
-sleepModel <- nimbleModel(sleepCode, constants = sleepConstants, data = sleepData)
-
-sleepModel <- compileNimble(sleepModel)
-
 samples <- nimbleMCMC(
   code = sleepCode, 
   constants = sleepConstants, 
   data = sleepData,
   monitors = c("b0.f", "b1.f", "b0.r", "b1.r", "sigma_y", "sigma_b0", "sigma_b1"),
-  niter = 4000, nburnin = 1000, nchains = 4
+  niter = 4000, nburnin = 1000, nchains = 4,
+  progressBar = FALSE
 )
 
 samples <- as_draws(samples)
 
-mcmc_combo(samples, pars = c("b0.f", "b1.f", "sigma_y", "sigma_b0", "sigma_b1"))
+summary(samples)
+```
+
+```{r}
+pars <- c("b0.f", "b1.f", "sigma_b0", "sigma_b1", "sigma_y")
+
+mcmc_combo(samples, pars = pars)
 ```
