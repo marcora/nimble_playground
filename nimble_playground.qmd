@@ -1,0 +1,74 @@
+---
+title: "nimble_playground"
+format:
+  html:
+    toc: true
+    df-print: kable
+---
+
+## Setup environment
+
+```{r}
+#| output: false
+library(tidyverse)
+library(nimble)
+library(posterior)
+library(bayesplot)
+```
+
+## Data
+
+```{r}
+data(sleepstudy, package = 'lme4')
+
+head(sleepstudy)
+```
+
+```{r}
+sleepCode <- nimbleCode({
+  for (i in 1:N) {
+    Reaction[i] ~ dnorm(mu[i], sd = sigma_y)
+    mu[i] <- (b0.f + b0.r[Subject[i]]) + (b1.f + b1.r[Subject[i]]) * Days[i]
+  }
+  
+  # Priors for fixed effects (Population Level)
+  b0.f ~ dnorm(0, sd = 100)
+  b1.f ~ dnorm(0, sd = 100)
+  
+  # Priors for random effects (Subject Level)
+  for (j in 1:J) {
+    b0.r[j] ~ dnorm(0, sd = sigma_b0)
+    b1.r[j] ~ dnorm(0, sd = sigma_b1)
+  }
+  
+  # Priors for standard deviations (variance components)
+  sigma_b0 ~ T(dnorm(0, sd = 100), 0, ) # Half-normal
+  sigma_b1 ~ T(dnorm(0, sd = 100), 0, )
+  sigma_y ~ T(dnorm(0, sd = 100), 0, )
+})
+
+sleepData <- list(Reaction = sleepstudy$Reaction)
+
+sleepConstants <- list(
+  N = length(sleepstudy$Subject),
+  J = length(unique(sleepstudy$Subject)),
+  Days = sleepstudy$Days,
+  Subject = as.numeric(factor(sleepstudy$Subject))
+)
+
+sleepModel <- nimbleModel(sleepCode, constants = sleepConstants, data = sleepData)
+
+sleepModel <- compileNimble(sleepModel)
+
+samples <- nimbleMCMC(
+  code = sleepCode, 
+  constants = sleepConstants, 
+  data = sleepData,
+  monitors = c("b0.f", "b1.f", "b0.r", "b1.r", "sigma_y", "sigma_b0", "sigma_b1"),
+  niter = 4000, nburnin = 1000, nchains = 4
+)
+
+samples <- as_draws(samples)
+
+mcmc_combo(samples, pars = c("b0.f", "b1.f", "sigma_y", "sigma_b0", "sigma_b1"))
+```
