@@ -129,38 +129,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>m0 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> d)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>), <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d) <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gf_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_performance</span>(m0, m1, m2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Model has zero degrees of freedom!
-Warning: Model has zero degrees of freedom!
-Warning: Model has zero degrees of freedom!
-Warning: Model has zero degrees of freedom!
-Warning: Model has zero degrees of freedom!
-Warning: Model has zero degrees of freedom!</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># Comparison of Model Performance Indices
-
-Name | Model | AIC (weights) | AICc (weights) | BIC (weights) |    R2 |  RMSE
------------------------------------------------------------------------------
-m0   |    lm |  65.1 (&gt;.999) |   66.8 (&gt;.999) |  65.7 (&gt;.999) | 0.000 | 5.135
-m1   |    lm |  37.9 (&gt;.999) |   41.9 (&gt;.999) |  38.8 (&gt;.999) | 0.946 | 1.192
-m2   |    lm |  -Inf (&gt;.999) |   -Inf (&gt;.999) |  -Inf (&gt;.999) | 1.000 | 0.000
-
-Name | R2 (adj.) | Sigma
-------------------------
-m0   |     0.000 | 5.413
-m1   |     0.939 | 1.333
-m2   |           |      </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_line</span>(y_pred <span class="sc">~</span> x, <span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">y_pred =</span> <span class="fu">predict</span>(m0), x), <span class="at">color =</span> <span class="st">"blue"</span>)  <span class="sc">|&gt;</span> <span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gf_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gf_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>), <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -170,22 +162,90 @@ m2   |           |      </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_line</span>(y_pred <span class="sc">~</span> x, <span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">y_pred =</span> <span class="fu">predict</span>(m1), x), <span class="at">color =</span> <span class="st">"blue"</span>)  <span class="sc">|&gt;</span> <span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m0 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> d)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>), <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_line</span>(y_pred <span class="sc">~</span> x, <span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">y_pred =</span> <span class="fu">predict</span>(m2), x), <span class="at">color =</span> <span class="st">"blue"</span>)  <span class="sc">|&gt;</span> <span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_performance</span>(m0, m1, m2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 14%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">AIC_wt</th>
+<th style="text-align: right;">AICc</th>
+<th style="text-align: right;">AICc_wt</th>
+<th style="text-align: right;">BIC</th>
+<th style="text-align: right;">BIC_wt</th>
+<th style="text-align: right;">R2</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">R2_adjusted</th>
+<th style="text-align: right;">Sigma</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">m0</td>
+<td style="text-align: left;">lm</td>
+<td style="text-align: right;">65.10</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66.81</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">65.71</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">5.135</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">5.413</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">m1</td>
+<td style="text-align: left;">lm</td>
+<td style="text-align: right;">37.89</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">41.89</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">38.80</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0.9461</td>
+<td style="text-align: right;">1.192</td>
+<td style="text-align: right;">0.9394</td>
+<td style="text-align: right;">1.333</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">m2</td>
+<td style="text-align: left;">lm</td>
+<td style="text-align: right;">-Inf</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">-Inf</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">-Inf</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

@@ -1,6 +1,10 @@
 ---
 title: "beware_of_r-square"
-format: html
+format:
+  html:
+    df-print: kable
+execute: 
+  warning: false
 ---
 
 ```{r}
@@ -28,6 +32,21 @@ gf_point(y ~ x, data = d)
 ```
 
 ```{r}
+gf_point(y ~ x, data = d) |>
+  gf_smooth(method = "lm", formula = y ~ 1, se = FALSE)
+```
+
+```{r}
+gf_point(y ~ x, data = d) |>
+  gf_smooth(method = "lm", formula = y ~ x, se = FALSE)
+```
+
+```{r}
+gf_point(y ~ x, data = d) |>
+  gf_smooth(method = "lm", formula = y ~ poly(x, N-1), se = FALSE)
+```
+
+```{r}
 m0 <- lm(y ~ 1, data = d)
 m1 <- lm(y ~ x, data = d)
 m2 <- lm(y ~ poly(x, N-1), data = d)
@@ -35,16 +54,4 @@ m2 <- lm(y ~ poly(x, N-1), data = d)
 
 ```{r}
 compare_performance(m0, m1, m2)
-```
-
-```{r}
-gf_line(y_pred ~ x, data = tibble(y_pred = predict(m0), x), color = "blue")  |> gf_point(y ~ x, data = d)
-```
-
-```{r}
-gf_line(y_pred ~ x, data = tibble(y_pred = predict(m1), x), color = "blue")  |> gf_point(y ~ x, data = d)
-```
-
-```{r}
-gf_line(y_pred ~ x, data = tibble(y_pred = predict(m2), x), color = "blue")  |> gf_point(y ~ x, data = d)
 ```
