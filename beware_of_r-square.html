@@ -101,6 +101,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="setup-environment" class="level2">
+<h2 class="anchored" data-anchor-id="setup-environment">Setup environment</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
@@ -110,6 +112,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">666</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="overfitting" class="level2">
+<h2 class="anchored" data-anchor-id="overfitting">Overfitting</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>N</span>
@@ -152,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_point</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d) <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gf_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>), <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gf_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>, <span class="at">raw=</span><span class="cn">TRUE</span>), <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -164,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m0 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> d)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> d)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>), <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, N<span class="dv">-1</span>, <span class="at">raw=</span><span class="cn">TRUE</span>), <span class="at">data =</span> d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_performance</span>(m0, m1, m2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -249,6 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
 <section id="double-descent" class="level2">
 <h2 class="anchored" data-anchor-id="double-descent">Double descent</h2>
 <p><a href="https://www.r-bloggers.com/2025/10/double-descent-explained/" class="uri">https://www.r-bloggers.com/2025/10/double-descent-explained/</a></p>
@@ -293,8 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(dat, <span class="dv">20</span>)</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dat, <span class="at">main=</span><span class="st">"Training data and fitted model"</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict_model</span>(model, dat)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dat<span class="sc">$</span>x[<span class="fu">order</span>(dat<span class="sc">$</span>x)], dat<span class="sc">$</span>pred[<span class="fu">order</span>(dat<span class="sc">$</span>x)], <span class="st">"l"</span>, <span class="at">col=</span><span class="st">"red"</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dat<span class="sc">$</span>x[<span class="fu">order</span>(dat<span class="sc">$</span>x)], dat<span class="sc">$</span>pred[<span class="fu">order</span>(dat<span class="sc">$</span>x)], <span class="st">"l"</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -305,29 +310,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>calc_test_error <span class="ot">&lt;-</span> <span class="cf">function</span>(model, nrow_test, sigma_test, n_reps){</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  mse <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_reps)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_reps){</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    dat_test <span class="ot">&lt;-</span> <span class="fu">make_data</span>(nrow_test, sigma_test)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> <span class="fu">predict_model</span>(model, dat_test)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    mse[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((pred <span class="sc">-</span> dat_test<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(mse)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  mse <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_reps)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_reps){</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    dat_test <span class="ot">&lt;-</span> <span class="fu">make_data</span>(nrow_test, sigma_test)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> <span class="fu">predict_model</span>(model, dat_test)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    mse[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((pred <span class="sc">-</span> dat_test<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(mse)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>calc_variance <span class="ot">&lt;-</span> <span class="cf">function</span>(n_pts, n_model, sigma, n_reps){</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  x_test <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="at">len=</span>n_pts)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  fitted <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nr=</span>n_reps, <span class="at">nc=</span><span class="fu">length</span>(x_test))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_reps){</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    dat <span class="ot">&lt;-</span> <span class="fu">make_data</span>(n_pts, sigma)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(dat, n_model)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    fitted[i,] <span class="ot">&lt;-</span> <span class="fu">predict_model</span>(model, <span class="fu">data.frame</span>(<span class="at">x=</span>x_test)) </span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="fu">apply</span>(fitted, <span class="dv">2</span>, var))</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  x_test <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="at">len=</span>n_pts)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  fitted <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nr=</span>n_reps, <span class="at">nc=</span><span class="fu">length</span>(x_test))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_reps){</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    dat <span class="ot">&lt;-</span> <span class="fu">make_data</span>(n_pts, sigma)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(dat, n_model)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    fitted[i,] <span class="ot">&lt;-</span> <span class="fu">predict_model</span>(model, <span class="fu">data.frame</span>(<span class="at">x=</span>x_test)) </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="fu">apply</span>(fitted, <span class="dv">2</span>, var))</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2510</span>)</span>
@@ -403,11 +406,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">vars=</span><span class="fu">rowMeans</span>(<span class="fu">log</span>(vars)), </span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">err=</span><span class="fu">rowMeans</span>(<span class="fu">log</span>(err)), </span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">plot_col=</span>plot_col)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span>K, df<span class="sc">$</span>err, <span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Number of added features"</span>,</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"log(test error)"</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">"Double Descent"</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">8</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span>K, df<span class="sc">$</span>err, <span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Number of added features"</span>, <span class="at">ylab=</span><span class="st">"log(test error)"</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">"Double Descent"</span>, <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">8</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -417,10 +417,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span>K, df<span class="sc">$</span>vars, <span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Number of added features"</span>,</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"log(variance)"</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">"Model variance"</span>,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"darkgreen"</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">8</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span>K, df<span class="sc">$</span>vars, <span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Number of added features"</span>, <span class="at">ylab=</span><span class="st">"log(variance)"</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">"Model variance"</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"darkgreen"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">8</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -432,18 +430,187 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>K <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span>K</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="fu">order</span>(df<span class="sc">$</span>vars), ]</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>vars, df<span class="sc">$</span>err, <span class="at">col=</span>df<span class="sc">$</span>plot_col,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">19</span>, <span class="at">xlab=</span><span class="st">"log(variance)"</span>, <span class="at">ylab=</span><span class="st">"log(test error)"</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>, <span class="at">cex=</span><span class="fl">1.3</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>loess_fit <span class="ot">&lt;-</span> <span class="fu">loess</span>(df<span class="sc">$</span>err <span class="sc">~</span> df<span class="sc">$</span>vars, <span class="at">span =</span> <span class="fl">0.6</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(df<span class="sc">$</span>vars, <span class="fu">predict</span>(loess_fit), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.1</span>), <span class="at">lwd=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>vars, df<span class="sc">$</span>err, <span class="at">col=</span>df<span class="sc">$</span>plot_col, <span class="at">pch=</span><span class="dv">19</span>, <span class="at">xlab=</span><span class="st">"log(variance)"</span>, <span class="at">ylab=</span><span class="st">"log(test error)"</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">cex=</span><span class="fl">1.3</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>loess_fit <span class="ot">&lt;-</span> <span class="fu">loess</span>(df<span class="sc">$</span>err <span class="sc">~</span> df<span class="sc">$</span>vars, <span class="at">span =</span> <span class="fl">0.6</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(df<span class="sc">$</span>vars, <span class="fu">predict</span>(loess_fit), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.1</span>), <span class="at">lwd=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+</section>
+<section id="double-descent-take-two" class="level2">
+<h2 class="anchored" data-anchor-id="double-descent-take-two">Double descent take two</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol type="1">
+<li>Simulate data: a simple sine wave with some noise</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="at">length.out =</span> n)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(pi <span class="sc">*</span> x) <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="fl">0.2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li>Create high-order polynomial features</li>
+</ol>
+<p>Using <code>raw=TRUE</code> to get standard powers: <code>x^1, x^2, ..., x^k</code></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>poly_degree <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>X_poly <span class="ot">&lt;-</span> <span class="fu">poly</span>(x, <span class="at">degree =</span> poly_degree, <span class="at">raw =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Define the order-dependent penalty weights</li>
+</ol>
+<p>We penalize higher-order coefficients more heavily.</p>
+<p>We set lower penalty for early terms (powers 1-3) and higher for the rest.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">seq_len</span>(poly_degree))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="4" type="1">
+<li>Fit the model using <code>glmnet</code> with the <code>penalty.factor argument</code></li>
+</ol>
+<p>We use <code>alpha=0</code> for Ridge regression (L2) to handle multicollinearity common in high-order polynomials.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(X_poly, y, <span class="at">penalty.factor =</span> weights, <span class="at">alpha =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="5" type="1">
+<li>Visualize the result</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>y_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit, <span class="at">newx =</span> X_poly, <span class="at">s =</span> <span class="st">"lambda.min"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">main =</span> <span class="st">"Order-Dependent Regularization"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, y_pred, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Data"</span>, <span class="st">"Model Fit"</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"gray"</span>, <span class="st">"blue"</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">19</span>, <span class="cn">NA</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="beware_of_r-square_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="print-environment" class="level2">
+<h2 class="anchored" data-anchor-id="print-environment">Print environment</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.6.0 (2026-04-24)
+ os       macOS Sequoia 15.7.7
+ system   aarch64, darwin23
+ ui       X11
+ language (EN)
+ collate  en_US.UTF-8
+ ctype    en_US.UTF-8
+ tz       America/New_York
+ date     2026-05-15
+ pandoc   3.9.0.2 @ /opt/homebrew/bin/ (via rmarkdown)
+ quarto   1.9.37 @ /usr/local/bin/quarto
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ package           * version       date (UTC) lib source
+ bayestestR        * 0.17.0.3      2026-05-01 [1] https://easystats.r-universe.dev (R 4.6.0)
+ cli                 3.6.6         2026-04-09 [1] CRAN (R 4.6.0)
+ coda                0.19-4.1      2024-01-31 [1] CRAN (R 4.5.0)
+ codetools           0.2-20        2024-03-31 [2] CRAN (R 4.6.0)
+ correlation       * 0.8.8.1       2026-02-23 [1] https://easystats.r-universe.dev (R 4.6.0)
+ datawizard        * 1.3.1.1       2026-05-09 [1] https://easystats.r-universe.dev (R 4.6.0)
+ digest              0.6.39        2025-11-19 [1] CRAN (R 4.5.2)
+ dplyr             * 1.2.1         2026-04-03 [1] CRAN (R 4.6.0)
+ easystats         * 0.7.6         2026-04-27 [1] https://easystats.r-universe.dev (R 4.6.0)
+ effectsize        * 1.0.2.0000001 2026-05-11 [1] https://easystats.r-universe.dev (R 4.6.0)
+ emmeans             2.0.3         2026-04-09 [1] CRAN (R 4.6.0)
+ estimability        1.5.1         2024-05-12 [1] CRAN (R 4.4.0)
+ evaluate            1.0.5         2025-08-27 [1] CRAN (R 4.5.0)
+ farver              2.1.2         2024-05-13 [1] CRAN (R 4.4.0)
+ fastmap             1.2.0         2024-05-15 [1] CRAN (R 4.4.0)
+ fontBitstreamVera   0.1.1         2017-02-01 [1] CRAN (R 4.4.0)
+ fontLiberation      0.1.0         2016-10-15 [1] CRAN (R 4.4.0)
+ fontquiver          0.2.1         2017-02-01 [1] CRAN (R 4.4.0)
+ forcats           * 1.0.1         2025-09-25 [1] CRAN (R 4.5.0)
+ foreach             1.5.2         2022-02-02 [1] CRAN (R 4.4.0)
+ gdtools             0.5.0         2026-02-09 [1] CRAN (R 4.5.2)
+ generics            0.1.4         2025-05-09 [1] CRAN (R 4.5.0)
+ ggformula         * 1.0.1         2026-01-17 [1] CRAN (R 4.5.2)
+ ggiraph           * 0.9.6         2026-02-21 [1] CRAN (R 4.5.2)
+ ggplot2           * 4.0.3         2026-04-22 [1] CRAN (R 4.6.0)
+ ggridges          * 0.5.7         2025-08-27 [1] CRAN (R 4.5.0)
+ glmnet            * 5.0           2026-05-04 [1] CRAN (R 4.6.0)
+ glue                1.8.1         2026-04-17 [1] CRAN (R 4.6.0)
+ gtable              0.3.6         2024-10-25 [1] CRAN (R 4.4.1)
+ haven               2.5.5         2025-05-30 [1] CRAN (R 4.5.0)
+ hms                 1.1.4         2025-10-17 [1] CRAN (R 4.5.0)
+ htmltools           0.5.9         2025-12-04 [1] CRAN (R 4.5.2)
+ htmlwidgets         1.6.4         2023-12-06 [1] CRAN (R 4.4.0)
+ insight           * 1.5.0.6       2026-05-11 [1] https://easystats.r-universe.dev (R 4.6.0)
+ iterators           1.0.14        2022-02-05 [1] CRAN (R 4.4.0)
+ jsonlite            2.0.0         2025-03-27 [1] CRAN (R 4.5.0)
+ knitr               1.51          2025-12-20 [1] CRAN (R 4.5.2)
+ labeling            0.4.3         2023-08-29 [1] CRAN (R 4.4.0)
+ labelled            2.16.0        2025-10-22 [1] CRAN (R 4.5.0)
+ lattice             0.22-9        2026-02-09 [1] CRAN (R 4.5.2)
+ lifecycle           1.0.5         2026-01-08 [1] CRAN (R 4.5.2)
+ lubridate         * 1.9.5         2026-02-04 [1] CRAN (R 4.5.2)
+ magrittr            2.0.5         2026-04-04 [1] CRAN (R 4.6.0)
+ MASS              * 7.3-65        2025-02-28 [2] CRAN (R 4.6.0)
+ Matrix            * 1.7-5         2026-03-21 [2] CRAN (R 4.6.0)
+ mgcv                1.9-4         2025-11-07 [1] CRAN (R 4.5.0)
+ modelbased        * 0.15.0        2026-05-10 [1] https://easystats.r-universe.dev (R 4.6.0)
+ mosaicCore          0.9.5         2025-07-30 [1] CRAN (R 4.5.0)
+ multcomp            1.4-30        2026-03-09 [1] CRAN (R 4.6.0)
+ mvtnorm             1.3-7         2026-04-15 [1] CRAN (R 4.6.0)
+ nlme                3.1-169       2026-03-27 [2] CRAN (R 4.6.0)
+ otel                0.2.0         2025-08-29 [1] CRAN (R 4.5.0)
+ parameters        * 0.29.0        2026-05-09 [1] https://easystats.r-universe.dev (R 4.6.0)
+ performance       * 0.16.0.3      2026-05-05 [1] https://easystats.r-universe.dev (R 4.6.0)
+ pillar              1.11.1        2025-09-17 [1] CRAN (R 4.5.0)
+ pkgconfig           2.0.3         2019-09-22 [1] CRAN (R 4.4.0)
+ purrr             * 1.2.2         2026-04-10 [1] CRAN (R 4.6.0)
+ R6                  2.6.1         2025-02-15 [1] CRAN (R 4.4.1)
+ RColorBrewer        1.1-3         2022-04-03 [1] CRAN (R 4.4.0)
+ Rcpp                1.1.1-1.1     2026-04-24 [1] CRAN (R 4.6.0)
+ readr             * 2.2.0         2026-02-19 [1] CRAN (R 4.5.2)
+ report            * 0.6.4         2026-05-04 [1] https://easystats.r-universe.dev (R 4.6.0)
+ rlang               1.2.0         2026-04-06 [1] CRAN (R 4.6.0)
+ rmarkdown           2.31          2026-03-26 [1] CRAN (R 4.6.0)
+ rstudioapi          0.18.0        2026-01-16 [1] CRAN (R 4.5.2)
+ S7                  0.2.2         2026-04-22 [1] CRAN (R 4.6.0)
+ sandwich            3.1-1         2024-09-15 [1] CRAN (R 4.4.1)
+ scales            * 1.4.0         2025-04-24 [1] CRAN (R 4.5.0)
+ see               * 0.13.0.1      2026-04-30 [1] https://easystats.r-universe.dev (R 4.6.0)
+ sessioninfo         1.2.3         2025-02-05 [1] CRAN (R 4.4.1)
+ shape               1.4.6.1       2024-02-23 [1] CRAN (R 4.5.0)
+ stringi             1.8.7         2025-03-27 [1] CRAN (R 4.5.0)
+ stringr           * 1.6.0         2025-11-04 [1] CRAN (R 4.5.0)
+ survival            3.8-6         2026-01-16 [1] CRAN (R 4.5.2)
+ systemfonts         1.3.2         2026-03-05 [1] CRAN (R 4.5.2)
+ TH.data             1.1-5         2025-11-17 [1] CRAN (R 4.5.2)
+ tibble            * 3.3.1         2026-01-11 [1] CRAN (R 4.5.2)
+ tidyr             * 1.3.2         2025-12-19 [1] CRAN (R 4.5.2)
+ tidyselect          1.2.1         2024-03-11 [1] CRAN (R 4.4.0)
+ tidyverse         * 2.0.0         2023-02-22 [1] CRAN (R 4.5.0)
+ timechange          0.4.0         2026-01-29 [1] CRAN (R 4.5.2)
+ tzdb                0.5.0         2025-03-15 [1] CRAN (R 4.4.1)
+ vctrs               0.7.3         2026-04-11 [1] CRAN (R 4.6.0)
+ withr               3.0.2         2024-10-28 [1] CRAN (R 4.4.1)
+ xfun                0.57          2026-03-20 [1] CRAN (R 4.6.0)
+ xtable              1.8-8         2026-02-22 [1] CRAN (R 4.5.2)
+ yaml                2.3.12        2025-12-10 [1] CRAN (R 4.5.2)
+ zoo                 1.8-15        2025-12-15 [1] CRAN (R 4.5.2)
+
+ [1] /Users/marcoe02/.Rlib
+ [2] /Library/Frameworks/R.framework/Versions/4.6/Resources/library
+ * ── Packages attached to the search path.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
 </div>
 </section>
